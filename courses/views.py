@@ -16,6 +16,11 @@ class CourseApiView(APIView):
         serializer = CourseSerializer(courses, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    def post(self, request):
+        course = CourseSerializer(data=request.data)
+        course.is_valid(raise_exception=True)
+        course.save()
+        return Response(course.data, status=status.HTTP_201_CREATED)
 
 class AvaliationApiView(APIView):
 
@@ -25,3 +30,9 @@ class AvaliationApiView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = AvaliationSerializer(avaliations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        avaliation = AvaliationSerializer(data=request.data)
+        avaliation.is_valid(raise_exception=True)
+        avaliation.save()
+        return Response(avaliation.data, status=status.HTTP_201_CREATED)
