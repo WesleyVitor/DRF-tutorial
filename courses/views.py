@@ -3,6 +3,10 @@ from rest_framework import generics
 
 from rest_framework import viewsets
 
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
+
 from .models import Course, Avaliation
 
 from .serializers import AvaliationSerializer, CourseSerializer
@@ -47,6 +51,24 @@ API V2
 class CoursesViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
+
+    """
+    O atributo url_path define o nome da url, mas por padrão é o nome do método decorado
+    """
+    @action(detail=True, methods=['GET'], url_path="avaliations") 
+    def avaliations(self, request, pk=None):
+        """
+        Método já existente pela classe ModelViewSet para pegar uma instância do Modelo da classe(Course)
+        """
+        course = self.get_object() 
+        """
+        Serializando para o retorno que eu quero, no caso é avaliations, e passando a instância que quero 
+        serializar, no caso as avaliations que estão dentro de course especificado.(Existe dentro do modelo
+        avaliation um foreignkey para course, mas foi adicionado um atributo related_name para o course saber
+        quais são as suas avaliations)
+        """
+        serializer = AvaliationSerializer(course.avaliations.all(), many=True)
+        return Response(serializer.data)
 
 class AvaliationsViewSet(viewsets.ModelViewSet):
     queryset = Avaliation.objects.all()
